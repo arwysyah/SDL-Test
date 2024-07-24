@@ -28,7 +28,7 @@ int main(int argc, char *argv[]) {
   SDL_RenderClear(ren);                        // Clear window with the color
   SDL_RenderPresent(ren);                      // Show the window
 
-  SDL_Delay(2000); // Wait for 2 seconds
+  SDL_Delay(3000); // Wait for 3 seconds
 
   SDL_DestroyRenderer(ren);
   SDL_DestroyWindow(win);
