@@ -1,0 +1,13 @@
+#ifndef DEFS_H
+#define DEFS_H
+
+#define WINDOW_WIDTH 640
+#define WINDOW_HEIGHT 480
+#define BALL_SIZE 10
+#define SPEED 120
+#define PLAYER_WIDTH 20
+#define PLAYER_HEIGHT 80
+#define PLAYER_MARGIN 10
+#define PLAYER_MOVEMENT_SPEED 300
+
+#endif // DEFS_H
