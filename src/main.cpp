@@ -4,6 +4,7 @@
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_scancode.h>
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
@@ -17,6 +18,8 @@ using namespace std;
 SDL_Window *window = nullptr;
 SDL_Renderer *renderer = nullptr;
 Ball ball;
+Player player1;
+bool isServed = false;
 
 int main(int argc, const char *argv[0]) {
   if (!Initialize()) {
@@ -62,7 +65,7 @@ bool Initialize() {
   }
 
   ball = CreateBall(BALL_SIZE);
-
+  player1 = MakePlayer();
   return true;
 }
 
@@ -91,7 +94,8 @@ void Update(float elapsed) {
 
   UpdateBall(&ball, elapsed);
   RenderBall(&ball);
-
+  UpdatePlayer(elapsed);
+  RenderPlayer();
   SDL_RenderPresent(renderer);
 }
 
@@ -112,6 +116,11 @@ void RenderBall(Ball *ball) {
 };
 
 void UpdateBall(Ball *ball, float elaspeTime) {
+  if (!isServed) {
+    ball->x = static_cast<float>(WINDOW_WIDTH) / 2;
+    ball->y = static_cast<float>(WINDOW_HEIGHT) / 2;
+    return;
+  }
   ball->x += ball->xSpeed * elaspeTime;
   ball->y += ball->ySpeed * elaspeTime;
 
@@ -127,4 +136,52 @@ void UpdateBall(Ball *ball, float elaspeTime) {
   if (ball->y > WINDOW_HEIGHT - (BALL_SIZE / 2)) {
     ball->ySpeed = -fabs(ball->ySpeed);
   };
+}
+
+Player MakePlayer() {
+  Player player = {.yPosition = static_cast<float>(WINDOW_HEIGHT) / 2};
+  return player;
+}
+
+void UpdatePlayer(float elapsed) {
+  const Uint8 *keyboardState = SDL_GetKeyboardState(nullptr);
+  if (keyboardState[SDL_SCANCODE_SPACE]) {
+    isServed = true;
+  }
+  if (keyboardState[SDL_SCANCODE_S] &&
+      player1.yPosition <
+          WINDOW_HEIGHT - static_cast<float>(PLAYER_HEIGHT) / 2) {
+    player1.yPosition += PLAYER_MOVEMENT_SPEED * elapsed;
+  }
+  if (keyboardState[SDL_SCANCODE_W] &&
+      player1.yPosition > 0 + static_cast<float>(PLAYER_HEIGHT) / 2) {
+    player1.yPosition -= PLAYER_MOVEMENT_SPEED * elapsed;
+  }
+  SDL_Rect firstPlayer = {.x = PLAYER_MARGIN,
+                          .y = static_cast<int>(player1.yPosition) -
+                               PLAYER_HEIGHT / 2,
+                          .w = PLAYER_WIDTH,
+                          .h = PLAYER_HEIGHT};
+  int size = ball.size;
+  SDL_Rect ballRect = {.x = static_cast<int>(ball.x) - size / 2,
+                       .y = static_cast<int>(ball.y) - size / 2,
+                       .w = size,
+                       .h = size
+
+  };
+
+  if (SDL_HasIntersection(&ballRect, &firstPlayer)) {
+    ball.xSpeed = fabs(ball.xSpeed);
+  }
+}
+
+void RenderPlayer() {
+  SDL_SetRenderDrawColor(renderer, 255, 222, 12, 1);
+  SDL_Rect firstPlayer = {.x = PLAYER_MARGIN,
+                          .y = static_cast<int>(player1.yPosition) -
+                               PLAYER_HEIGHT / 2,
+                          .w = PLAYER_WIDTH,
+                          .h = PLAYER_HEIGHT};
+
+  SDL_RenderFillRect(renderer, &firstPlayer);
 }
