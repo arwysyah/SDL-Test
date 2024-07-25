@@ -8,13 +8,13 @@ CXXFLAGS = -std=c++17 -Wall -Iinclude
 LDFLAGS = -lSDL2
 
 # Source files
-SRCS = $(wildcard *.cpp)
+SRCS = $(wildcard src/*.cpp)
 
 # Object files
 OBJS = $(SRCS:.cpp=.o)
 
 # Executable
-EXEC = 2Shoot
+EXEC = pong
 
 # Default target
 all: $(EXEC)
